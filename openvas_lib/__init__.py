@@ -111,20 +111,23 @@ def report_parser(path_or_file, ignore_log_info=True):
     :return: list of OpenVASResult structures.
     :rtype: list(OpenVASResult)
     """
-	if isinstance(path_or_file, str):
-		if not os.path.exists(path_or_file):
-			raise IOError("File %s not exits." % path_or_file)
-		if not os.path.isfile(path_or_file):
-			raise IOError("%s is not a file." % path_or_file)
+	if type(path_or_file).__name__ in  ["Element", "ElementTree"]:
+		xml_parsed = path_or_file
 	else:
-		if not getattr(getattr(path_or_file, "__class__", ""), "__name__", "") in ("file", "StringIO", "StringO"):
-			raise TypeError("Expected str or file, got '%s' instead" % type(path_or_file))
+		if isinstance(path_or_file, str):
+			if not os.path.exists(path_or_file):
+				raise IOError("File %s not exits." % path_or_file)
+			if not os.path.isfile(path_or_file):
+				raise IOError("%s is not a file." % path_or_file)
+		else:
+			if not getattr(getattr(path_or_file, "__class__", ""), "__name__", "") in ("file", "StringIO", "StringO"):
+				raise TypeError("Expected str or file, got '%s' instead" % type(path_or_file))
 
-	# Parse XML file
-	try:
-		xml_parsed = etree.parse(path_or_file)
-	except etree.ParseError:
-		raise etree.ParseError("Invalid XML file. Ensure file is correct and all tags are properly closed.")
+		# Parse XML file
+		try:
+			xml_parsed = etree.parse(path_or_file)
+		except etree.ParseError:
+			raise etree.ParseError("Invalid XML file. Ensure file is correct and all tags are properly closed.")
 
 	# Use this method, because API not exposes real path and if you write isisntance(xml_results, Element)
 	# doesn't works
@@ -136,8 +139,8 @@ def report_parser(path_or_file, ignore_log_info=True):
 		raise TypeError("Expected ElementTree or Element, got '%s' instead" % type(xml_parsed))
 
 	# Check valid xml format
-	if "id" not in xml.keys():
-		raise ValueError("XML format is not valid, doesn't contains id attribute.")
+	# if "id" not in xml.keys():
+	# 	raise ValueError("XML format is not valid, doesn't contains id attribute.")
 
 	# Regex
 	port_regex_specific = re.compile("([\w\d\s]*)\(([\d]+)/([\w\W\d]+)\)")
