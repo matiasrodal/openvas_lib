@@ -690,7 +690,8 @@ class VulnscanManager(object):
 				"Task is currently running. Until it not finished, you can't obtain the results.")
 
 		try:
-			m_response = self.__manager.get_results(task_id)
+			report_id = self.__manager.get_tasks(task_id).find('last_report').find('report').get('id')
+			m_response = self.__manager.get_report_xml(report_id).find('report').find('report').find('results')
 		except ServerError as e:
 			raise VulnscanServerError("Can't get the results for the task %s. Error: %s" % (task_id, e.message))
 
@@ -729,6 +730,25 @@ class VulnscanManager(object):
 			raise TypeError("Expected string, got %r instead" % type(report_id))
 
 		return self.__manager.get_report_pdf(report_id)
+
+	# ----------------------------------------------------------------------
+	def get_tasks(self, task_id):
+		"""
+		Get information about the configured profiles in the server.
+
+		If name param is provided, only get the task associated to this name.
+
+		:param task_id: task id to get
+		:type task_id: str
+
+		:return: `ElementTree` | None
+
+		:raises: ClientError, ServerError
+		"""
+		if not isinstance(task_id, str):
+			raise TypeError("Expected string, got %r instead" % type(task_id))
+
+		return self.__manager.get_tasks(task_id)
 
 	# ----------------------------------------------------------------------
 	def get_progress(self, task_id):
