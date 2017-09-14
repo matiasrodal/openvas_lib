@@ -359,8 +359,9 @@ def report_parser(path_or_file, ignore_log_info=True):
 			# Unknown tags
 			# --------------------------------------------------------------------------
 			else:
+				pass
 				# Unrecognised tag
-				logging.warning("%s tag unrecognised" % l_tag)
+				# logging.warning("%s tag unrecognised" % l_tag)
 
 		# Add to the return values
 		m_return_append(l_partial_result)
